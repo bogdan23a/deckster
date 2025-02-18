@@ -1,24 +1,19 @@
 package com.techhunt.deckster.game.service;
 
+import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.Game;
+import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.entity.Player;
-import com.techhunt.deckster.game.enums.GameEvent;
-import com.techhunt.deckster.game.enums.GameState;
-import com.techhunt.deckster.game.interceptor.GameStateMachineInterceptor;
 import com.techhunt.deckster.game.repository.GameRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.statemachine.StateMachine;
-import org.springframework.statemachine.config.StateMachineFactory;
-import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.techhunt.deckster.game.enums.GameState.DRAFT;
 
@@ -28,11 +23,14 @@ import static com.techhunt.deckster.game.enums.GameState.DRAFT;
 public class GameClient implements GameService {
 
     public static final String GAME_ID_HEADER = "game_id";
+    public static final String EMAIL_HEADER = "email";
+    public static final String DECK_ID_HEADER = "deck_id";
 
     private final GameRepository repository;
     private final PlayerService playerService;
-    private final StateMachineFactory<GameState, GameEvent> stateMachineFactory;
-    private final GameStateMachineInterceptor gameStateMachineInterceptor;
+    private final DeckService deckService;
+    private final GameCardService gameCardService;
+    private final CardService cardService;
 
     @Override
     public List<Game> findAll() {
@@ -46,34 +44,47 @@ public class GameClient implements GameService {
         return game;
     }
 
-    @Transactional
-    public void sendEvent(String event, String gameId) {
-        StateMachine<GameState, GameEvent> stateMachine = build(gameId);
-        sendEvent(UUID.fromString(gameId), stateMachine, GameEvent.valueOf(event));
+    @Override
+    public Game findById(UUID gameId) {
+        return repository.findById(gameId).orElse(new Game());
     }
 
     @Override
-    public Game findById(UUID gameId) {
-        return repository.findById(gameId).orElse(null);
+    public void save(Game game) {
+        repository.save(game);
     }
 
-    public StateMachine<GameState, GameEvent> build(String gameId) {
-        Game game = repository.getReferenceById(UUID.fromString(gameId));
-        StateMachine<GameState, GameEvent> stateMachine = stateMachineFactory.getStateMachine(game.getId());
-        stateMachine.stopReactively().subscribe();
-        stateMachine.getStateMachineAccessor().doWithAllRegions(accessor -> {
-            accessor.addStateMachineInterceptor(gameStateMachineInterceptor);
-            accessor.resetStateMachineReactively(new DefaultStateMachineContext<>(game.getState(), null, null, null)).subscribe();
-        });
-        stateMachine.startReactively().subscribe();
-        return stateMachine;
+    @Override
+    public void dealCards(UUID gameId) {
+        Game game = findById(gameId);
+        game.getPlayers().forEach(player -> deckService.dealHand(player, game.getDeck()));
     }
 
-    private void sendEvent(UUID gameId, StateMachine<GameState, GameEvent> stateMachine, GameEvent gameEvent) {
-        Message<GameEvent> message = MessageBuilder.withPayload(gameEvent)
-                .setHeader(GAME_ID_HEADER, gameId.toString())
-                .build();
-        stateMachine.sendEvent(Mono.just(message)).subscribe();
-        log.info(stateMachine.getState().toString());
+    @Override
+    public void choosePrompt(UUID gameId) {
+        Game game = findById(gameId);
+        List<GameCard> gameCards = gameCardService.findByGameId(gameId);
+        Set<UUID> usedCards = gameCards.stream().map(GameCard::getCardId).collect(Collectors.toSet());
+        GameCard prompt = game.getDeck().getCards().stream()
+                .filter(card -> Objects.equals(card.getType().getName(), "Prompt"))
+                .filter(card -> !usedCards.contains(card.getId()))
+                .findFirst()
+                .map(card -> new GameCard(gameId, card.getId()))
+                .orElse(null);
+        gameCardService.save(prompt);
+    }
+
+    @Override
+    public Card getPrompt(UUID gameId) {
+        List<Card> promptGameCards = gameCardService.findByGameId(gameId).stream()
+                .map(GameCard::getCardId)
+                .map(cardService::findById)
+                .filter(card -> Objects.equals(card.getType().getName(), "Prompt"))
+                .toList();
+        if (promptGameCards == null || promptGameCards.size() != 1) {
+            log.error("Prompt card not found for game {}", gameId);
+            return null;
+        }
+        return promptGameCards.getFirst();
     }
 }

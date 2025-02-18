@@ -8,7 +8,6 @@ import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.state.State;
-import org.springframework.statemachine.support.StateMachineInterceptor;
 import org.springframework.statemachine.support.StateMachineInterceptorAdapter;
 import org.springframework.statemachine.transition.Transition;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.techhunt.deckster.game.service.GameStateMachineService.GAME_ID_HEADER;
+import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
 @Component
 @RequiredArgsConstructor
@@ -33,10 +32,13 @@ public class GameStateMachineInterceptor extends StateMachineInterceptorAdapter<
     public void preStateChange(State<GameState, GameEvent> state, Message<GameEvent> message, Transition<GameState, GameEvent> transition, StateMachine<GameState, GameEvent> stateMachine, StateMachine<GameState, GameEvent> rootStateMachine) {
         Optional.ofNullable(message)
                 .map(msg -> UUID.fromString((String) message.getHeaders().getOrDefault(GAME_ID_HEADER, null)))
-                .map(repository::getReferenceById)
+                .map(repository::findById)
                 .ifPresent(game -> {
-                    game.setState(state.getId());
-                    repository.save(game);
+                    if (game.isEmpty()) {
+                        return;
+                    }
+                    game.get().setState(state.getId());
+                    repository.save(game.get());
                 });
     }
 

@@ -2,5 +2,7 @@ package com.techhunt.deckster.game.task;
 
 public enum InputType {
     LIST,
-    PICKER
+    DECK_PICKER,
+    CARD_PICKER,
+    PROMPT,
 }

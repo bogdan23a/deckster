@@ -36,8 +36,8 @@ public class Card implements Serializable {
     @JoinColumn(name ="type_id")
     private CardType type;
 
-    @Column(name = "player_id")
-    private UUID playerId;
+    @Column(name = "player_email")
+    private String playerEmail;
 
     public Card(String content, UUID deckId, CardType type) {
         this.content = content;

@@ -11,4 +11,5 @@ public interface CardTypeService {
     CardType save(CardType type);
 
     CardType getId(String typeName);
+    CardType findByName(String name);
 }

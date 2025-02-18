@@ -5,15 +5,14 @@ import com.techhunt.deckster.game.enums.GameEvent;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public abstract class GameTaskConfigurator {
 
 
-    public GameTask getTask(UUID gameId) {
-        return new GameTask(setupDisplay(gameId), setupEvents());
+    public GameTask getTask(Map<String, String> message) {
+        return new GameTask(setupDisplay(message), setupEvents());
     }
 
-    public abstract Map<String, GameTaskFieldValue> setupDisplay(UUID gameId);
+    public abstract Map<String, GameTaskFieldValue> setupDisplay(Map<String, String> message);
     public abstract List<GameEvent> setupEvents();
 }

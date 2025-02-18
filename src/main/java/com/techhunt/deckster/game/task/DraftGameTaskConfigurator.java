@@ -21,7 +21,8 @@ public class DraftGameTaskConfigurator extends GameTaskConfigurator {
 
     private final PlayerService playerService;
 
-    public Map<String, GameTaskFieldValue> setupDisplay(UUID gameId) {
+    public Map<String, GameTaskFieldValue> setupDisplay(Map<String, String> message) {
+        UUID gameId = UUID.fromString(message.get("game_id"));
         List<Player> players = playerService.findByGameId(gameId);
         return Map.of(PLAYERS.getMessage(), new DraftTaskFieldValue(LIST, players));
     }
@@ -31,7 +32,7 @@ public class DraftGameTaskConfigurator extends GameTaskConfigurator {
     }
 
     @Override
-    public GameTask getTask(UUID gameId) {
-        return new GameTask(setupDisplay(gameId), setupEvents());
+    public GameTask getTask(Map<String, String> message) {
+        return new GameTask(setupDisplay(message), setupEvents());
     }
 }

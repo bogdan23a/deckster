@@ -2,14 +2,21 @@ package com.techhunt.deckster.game.service;
 
 import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.Deck;
+import com.techhunt.deckster.game.entity.GameCard;
+import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.repository.DeckRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +25,8 @@ public class DeckClient implements DeckService {
     private final DeckRepository repository;
     private final CardGenerationService cardGenerationService;
     private final CardService cardService;
+    private final PlayerService playerService;
+    private final GameCardService gameCardService;
 
     @Override
     public List<Deck> findAll() {
@@ -58,5 +67,17 @@ public class DeckClient implements DeckService {
     public List<String> findAllNames() {
         return repository.findNames();
     }
-    
+
+    @Override
+    public void dealHand(Player player, Deck deck) {
+        List<GameCard> responseCards = gameCardService.findByCardIdNotIn(deck.getCards().stream()
+                .filter(card -> !Objects.equals(card.getType().getName(), "Response"))
+                .map(Card::getId)
+                .collect(Collectors.toList()));
+        List<Card> deckCards = new ArrayList<>(responseCards);
+        Collections.shuffle(deckCards);
+        List<GameCard> hand = deckCards.subList(0, 7).stream().map(card -> new GameCard(player.getGameId(), card.getId())).toList();
+        player.setHand(new HashSet<>(hand));
+        playerService.save(player);
+    }
 }

@@ -1,6 +1,7 @@
 package com.techhunt.deckster.game.service;
 
 import com.techhunt.deckster.game.entity.Card;
+import com.techhunt.deckster.game.entity.CardType;
 import com.techhunt.deckster.game.repository.CardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,20 @@ public class CardClient implements CardService {
     @Override
     public List<Card> findByDeckId(UUID deckId) {
         return repository.findByDeckId(deckId);
+    }
+
+    @Override
+    public List<Card> findByEmailAndCardType(String email, CardType cardType) {
+        return repository.findByPlayerEmailAndType(email, cardType);
+    }
+
+    @Override
+    public Card findOneByCardType(CardType cardType) {
+        return repository.findByType(cardType).stream().findAny().orElse(null);
+    }
+
+    @Override
+    public Card findById(UUID cardId) {
+        return repository.findById(cardId).orElse(null);
     }
 }

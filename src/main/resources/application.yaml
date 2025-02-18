@@ -3,7 +3,9 @@ spring:
     name: deckster
   jackson:
     property-naming-strategy: SNAKE_CASE
-#  router:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  #  router:
 #    static-resources:
 #      swagger:
 #        paths: classpath:META-INF/swagger
@@ -31,5 +33,6 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
 server:
   port: 9090

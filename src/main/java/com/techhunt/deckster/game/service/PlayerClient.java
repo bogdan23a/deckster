@@ -2,6 +2,7 @@ package com.techhunt.deckster.game.service;
 
 import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.repository.PlayerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class PlayerClient implements PlayerService {
     }
 
     @Override
+    @Transactional
     public Player save(Player player) {
         return repository.save(player);
     }

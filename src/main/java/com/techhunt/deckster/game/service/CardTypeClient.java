@@ -40,4 +40,9 @@ public class CardTypeClient implements CardTypeService {
         return repository.findByName(typeName);
     }
 
+    @Override
+    public CardType findByName(String name) {
+        return repository.findByName(name);
+    }
+
 }

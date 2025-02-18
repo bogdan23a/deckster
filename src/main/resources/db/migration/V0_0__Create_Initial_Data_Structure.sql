@@ -13,9 +13,6 @@ CREATE TABLE IF NOT EXISTS card(
     content      VARCHAR(200),
     type_id      UUID,
     deck_id      UUID,
-    player_email VARCHAR(40),
-    prompt       BOOL NOT NULL DEFAULT FALSE,
-    response     BOOL NOT NULL DEFAULT FALSE,
 
     CONSTRAINT deck_id_foreign_key FOREIGN KEY (deck_id) REFERENCES deck(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT card_type_foreign_key FOREIGN KEY (type_id) REFERENCES card_type(id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -23,7 +20,7 @@ CREATE TABLE IF NOT EXISTS card(
 
 CREATE TABLE IF NOT EXISTS game(
     id          UUID        NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    gameState   VARCHAR(40) NOT NULL,
+    game_state  VARCHAR(40) NOT NULL,
     deck_id     UUID
 );
 
@@ -36,7 +33,16 @@ CREATE TABLE IF NOT EXISTS player(
     CONSTRAINT game_id_foreign_key FOREIGN KEY (game_id) REFERENCES game(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-ALTER TABLE card ADD CONSTRAINT player_email_foreign_key FOREIGN KEY (player_email) REFERENCES player(email) ON UPDATE CASCADE ON DELETE CASCADE;
+CREATE TABLE IF NOT EXISTS game_card(
+    id       UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+    game_id  UUID NOT NULL,
+    card_id  UUID NOT NULL,
+    prompt   BOOL NOT NULL DEFAULT FALSE,
+    response BOOL NOT NULL DEFAULT FALSE,
+    player_email VARCHAR(40),
+    CONSTRAINT game_id_foreign_key FOREIGN KEY (game_id) REFERENCES game(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT card_id_foreign_key FOREIGN KEY (card_id) REFERENCES card(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
 
 CREATE INDEX IF NOT EXISTS deck_name_index ON deck(name);
 CREATE INDEX IF NOT EXISTS card_type_index ON card_type(name);

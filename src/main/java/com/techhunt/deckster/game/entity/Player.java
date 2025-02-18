@@ -27,10 +27,11 @@ public class Player {
     @Column(name = "email")
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "player_email")
-    private Set<Card> hand;
+    private Set<GameCard> hand;
 
+    @Column(name = "game_id")
     private UUID gameId;
 
     private boolean dealer;

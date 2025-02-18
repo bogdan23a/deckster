@@ -7,7 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GameTaskFieldLabel {
     DECK("Choose Your Deck"),
-    PLAYERS("Table");
+    PLAYERS("Table"),
+    PROMPT(""),
+    RESPONSES("Choose The Response");
 
     private final String message;
 }
