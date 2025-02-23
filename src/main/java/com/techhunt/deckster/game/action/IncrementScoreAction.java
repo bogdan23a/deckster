@@ -1,10 +1,11 @@
 package com.techhunt.deckster.game.action;
 
-import com.techhunt.deckster.game.entity.Game;
+import com.techhunt.deckster.game.entity.Card;
+import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.enums.GameState;
-import com.techhunt.deckster.game.service.GameService;
+import com.techhunt.deckster.game.service.GameCardService;
 import com.techhunt.deckster.game.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.statemachine.StateContext;
@@ -13,23 +14,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-import static com.techhunt.deckster.game.service.GameClient.EMAIL_HEADER;
+import static com.techhunt.deckster.game.service.GameClient.CARD_ID_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
 @Service
 @RequiredArgsConstructor
-public class AddPlayerToGameAction implements Action<GameState, GameEvent> {
+public class IncrementScoreAction implements Action<GameState, GameEvent> {
 
-    private final GameService gameService;
+    private final GameCardService gameCardService;
     private final PlayerService playerService;
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
-        String email = (String) context.getMessageHeader(EMAIL_HEADER);
         String gameId = (String) context.getMessageHeader(GAME_ID_HEADER);
-        Game game = gameService.findById(UUID.fromString(gameId));
-        Player player = playerService.findByEmail(email);
-        game.getPlayers().add(player);
-        gameService.save(game);
+        String cardId = (String) context.getMessageHeader(CARD_ID_HEADER);
+        GameCard card = gameCardService.findByGameIdAndCardId(UUID.fromString(gameId), UUID.fromString(cardId));
+        Player player = playerService.findByEmail(card.getEmail());
+        player.setScore(player.getScore() + 1);
+        playerService.save(player);
     }
 }

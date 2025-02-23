@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Data
@@ -21,7 +22,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GameCard implements Serializable {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
@@ -29,9 +29,20 @@ public class GameCard implements Serializable {
 
     private UUID gameId;
     private UUID cardId;
+    private boolean used;
+    private String email;
+    private Timestamp usedAt;
 
     public GameCard(UUID gameId, UUID cardId) {
         this.gameId = gameId;
         this.cardId = cardId;
+    }
+
+    public GameCard(UUID gameId, UUID cardId, String email, boolean used, Timestamp usedAt) {
+        this.gameId = gameId;
+        this.cardId = cardId;
+        this.used = used;
+        this.usedAt = usedAt;
+        this.email = email;
     }
 }

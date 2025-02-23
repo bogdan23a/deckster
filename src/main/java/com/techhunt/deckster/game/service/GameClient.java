@@ -9,6 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -25,12 +29,14 @@ public class GameClient implements GameService {
     public static final String GAME_ID_HEADER = "game_id";
     public static final String EMAIL_HEADER = "email";
     public static final String DECK_ID_HEADER = "deck_id";
+    public static final String CARD_ID_HEADER = "card_id";
 
     private final GameRepository repository;
     private final PlayerService playerService;
     private final DeckService deckService;
     private final GameCardService gameCardService;
     private final CardService cardService;
+    private final CardTypeService cardTypeService;
 
     @Override
     public List<Game> findAll() {
@@ -61,30 +67,46 @@ public class GameClient implements GameService {
     }
 
     @Override
-    public void choosePrompt(UUID gameId) {
+    public void choosePrompt(UUID gameId, String email) {
         Game game = findById(gameId);
         List<GameCard> gameCards = gameCardService.findByGameId(gameId);
-        Set<UUID> usedCards = gameCards.stream().map(GameCard::getCardId).collect(Collectors.toSet());
-        GameCard prompt = game.getDeck().getCards().stream()
+        Set<UUID> usedCards = gameCards.stream().filter(GameCard::isUsed).map(GameCard::getCardId).collect(Collectors.toSet());
+        List<Card> prompts = game.getDeck().getCards().stream()
                 .filter(card -> Objects.equals(card.getType().getName(), "Prompt"))
                 .filter(card -> !usedCards.contains(card.getId()))
-                .findFirst()
-                .map(card -> new GameCard(gameId, card.getId()))
+                .collect(Collectors.toList());
+        Collections.shuffle(prompts);
+        GameCard prompt = prompts.stream().findFirst()
+                .map(card -> new GameCard(gameId, card.getId(), email, true, Timestamp.from(Instant.now())))
                 .orElse(null);
         gameCardService.save(prompt);
     }
 
     @Override
     public Card getPrompt(UUID gameId) {
-        List<Card> promptGameCards = gameCardService.findByGameId(gameId).stream()
+        List<GameCard> gameCards = gameCardService.findByGameId(gameId);
+        List<GameCard> promptGameCards = gameCards.stream()
+                .filter(gameCard -> {
+                    Card card = cardService.findById(gameCard.getCardId());
+                    return "Prompt".equals(card.getType().getName());
+                })
+                .sorted(((Comparator.comparing(GameCard::getUsedAt))))
+                .toList();
+        Card prompt = promptGameCards.stream()
                 .map(GameCard::getCardId)
                 .map(cardService::findById)
                 .filter(card -> Objects.equals(card.getType().getName(), "Prompt"))
-                .toList();
-        if (promptGameCards == null || promptGameCards.size() != 1) {
+                .findFirst().orElse(null);
+        if (prompt == null) {
             log.error("Prompt card not found for game {}", gameId);
             return null;
         }
-        return promptGameCards.getFirst();
+        return prompt;
+    }
+
+    @Override
+    public void removeUsedCardsFromUsersHands(UUID gameId) {
+        List<GameCard> usedCards = gameCardService.findByGameId(gameId).stream().filter(GameCard::isUsed).toList();
+        usedCards.stream().peek(card -> card.setEmail(null)).forEach(gameCardService::save);
     }
 }

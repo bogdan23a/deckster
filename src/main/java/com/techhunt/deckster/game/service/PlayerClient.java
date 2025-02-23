@@ -30,4 +30,14 @@ public class PlayerClient implements PlayerService {
     public Player save(Player player) {
         return repository.save(player);
     }
+
+    @Override
+    public int countByGameId(UUID gameId) {
+        return repository.countByGameId(gameId);
+    }
+
+    @Override
+    public List<String> findIdsByGameId(UUID gameId) {
+        return repository.getEmailsByGameId(gameId);
+    }
 }

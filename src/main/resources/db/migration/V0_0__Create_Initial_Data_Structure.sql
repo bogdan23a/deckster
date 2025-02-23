@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS game_card(
     id       UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
     game_id  UUID NOT NULL,
     card_id  UUID NOT NULL,
-    prompt   BOOL NOT NULL DEFAULT FALSE,
-    response BOOL NOT NULL DEFAULT FALSE,
     player_email VARCHAR(40),
+    used   BOOL NOT NULL DEFAULT FALSE,
+    used_at TIMESTAMP,
     CONSTRAINT game_id_foreign_key FOREIGN KEY (game_id) REFERENCES game(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT card_id_foreign_key FOREIGN KEY (card_id) REFERENCES card(id) ON UPDATE CASCADE ON DELETE CASCADE
 );

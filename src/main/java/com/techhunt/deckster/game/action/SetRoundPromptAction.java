@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.techhunt.deckster.game.service.GameClient.EMAIL_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
 @Slf4j
@@ -24,7 +25,8 @@ public class SetRoundPromptAction implements Action<GameState, GameEvent> {
     public void execute(StateContext<GameState, GameEvent> context) {
         try {
             String gameId = (String) context.getMessageHeader(GAME_ID_HEADER);
-            gameService.choosePrompt(UUID.fromString(gameId));
+            String email = (String) context.getMessageHeader(EMAIL_HEADER);
+            gameService.choosePrompt(UUID.fromString(gameId), email);
         } catch (Exception e) {
             log.error("Error setting round prompt", e);
         }

@@ -4,6 +4,7 @@ import com.techhunt.deckster.game.entity.GameTask;
 import com.techhunt.deckster.game.enums.GameState;
 import com.techhunt.deckster.game.task.DraftGameTaskConfigurator;
 import com.techhunt.deckster.game.task.ResponsesGameTaskConfigurator;
+import com.techhunt.deckster.game.task.RewardGameTaskConfigurator;
 import com.techhunt.deckster.game.task.SetupGameTaskConfigurator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ public class TaskClient implements TaskService {
     private final DraftGameTaskConfigurator draftGameTaskConfigurator;
     private final SetupGameTaskConfigurator setupGameTaskConfigurator;
     private final ResponsesGameTaskConfigurator responsesGameTaskConfigurator;
+    private final RewardGameTaskConfigurator rewardGameTaskConfigurator;
 
     @Override
     public GameTask getTask(GameState gameState, Map<String, String> message) {
@@ -26,6 +28,7 @@ public class TaskClient implements TaskService {
             case DRAFT -> draftGameTaskConfigurator.getTask(message);
             case SETUP -> setupGameTaskConfigurator.getTask(message);
             case RESPONSES -> responsesGameTaskConfigurator.getTask(message);
+            case REWARD -> rewardGameTaskConfigurator.getTask(message);
             default -> {
                 log.error("Invalid game state: {}", gameState);
                 yield null;

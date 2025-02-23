@@ -7,6 +7,6 @@ public enum GameEvent {
     DEALT,
     PROMPTED,
     RESPOND,
-    REWARD,
+    PICK_WINNER,
     END
 }

@@ -9,4 +9,6 @@ public interface PlayerService {
     List<Player> findByGameId(UUID gameId);
     Player findByEmail(String email);
     Player save(Player player);
+    int countByGameId(UUID gameId);
+    List<String> findIdsByGameId(UUID gameId);
 }

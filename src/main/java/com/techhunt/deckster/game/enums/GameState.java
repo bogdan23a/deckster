@@ -7,6 +7,7 @@ public enum GameState {
     DEAL,
     PROMPT,
     RESPONSES,
+    RESPONSES_CHOICE,
     REWARD,
     WINNER,
     END_GAME

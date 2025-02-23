@@ -1,5 +1,6 @@
 package com.techhunt.deckster.game.service;
 
+import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.repository.GameCardRepository;
 import jakarta.transaction.Transactional;
@@ -27,7 +28,33 @@ public class GameCardClient implements GameCardService {
     }
 
     @Override
+    public List<GameCard> findByCardId(UUID cardId) {
+        return List.of();
+    }
+
+    @Override
     public List<GameCard> findByCardIdNotIn(List<UUID> cardIds) {
         return repository.findByCardIdNotIn(cardIds);
+    }
+
+    @Override
+    public GameCard findByGameIdAndCardId(UUID gameId, UUID cardId) {
+        return repository.findByGameIdAndCardId(gameId, cardId);
+    }
+
+    @Override
+    public int countByGameIdAndType(UUID gameId, UUID typeId) {
+        return repository.countByGameIdAndType(gameId, typeId);
+    }
+
+    @Override
+    public List<Card> findbyGameIdAndCardTypeAndUsed(UUID gameId, UUID cardType, boolean used) {
+        return repository.findByGameIdAndCardTypeAndUsedAndEmailNotNull(gameId, cardType, used);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByGameId(UUID gameId) {
+        repository.removeByGameId(gameId);
     }
 }

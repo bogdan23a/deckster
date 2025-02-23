@@ -1,5 +1,6 @@
 package com.techhunt.deckster.game.service;
 
+import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.GameCard;
 
 import java.util.List;
@@ -10,4 +11,8 @@ public interface GameCardService {
     void save(GameCard card);
     List<GameCard> findByCardId(UUID cardId);
     List<GameCard> findByCardIdNotIn(List<UUID> cardIds);
+    GameCard findByGameIdAndCardId(UUID gameId, UUID cardId);
+    int countByGameIdAndType(UUID gameId, UUID typeId);
+    List<Card> findbyGameIdAndCardTypeAndUsed(UUID gameId, UUID cardType, boolean isUsed);
+    void deleteByGameId(UUID gameId);
 }
