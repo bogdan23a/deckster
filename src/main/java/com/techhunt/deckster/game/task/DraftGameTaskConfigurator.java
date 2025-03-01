@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.techhunt.deckster.game.enums.GameEvent.SET_GAME;
+import static com.techhunt.deckster.game.service.GameClient.EMAIL_HEADER;
+import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 import static com.techhunt.deckster.game.task.GameTaskFieldLabel.PLAYERS;
 import static com.techhunt.deckster.game.task.InputType.LIST;
 
@@ -22,17 +25,22 @@ public class DraftGameTaskConfigurator extends GameTaskConfigurator {
     private final PlayerService playerService;
 
     public Map<String, GameTaskFieldValue> setupDisplay(Map<String, String> message) {
-        UUID gameId = UUID.fromString(message.get("game_id"));
+        UUID gameId = UUID.fromString(message.get(GAME_ID_HEADER));
         List<Player> players = playerService.findByGameId(gameId);
         return Map.of(PLAYERS.getMessage(), new DraftTaskFieldValue(LIST, players));
     }
 
-    public List<GameEvent> setupEvents() {
+    public List<GameEvent> setupEvents(Map<String, String> message) {
+        String email = message.get(EMAIL_HEADER);
+        Player player = playerService.findByEmail(email);
+        if (!player.isHost()) {
+            return List.of();
+        }
         return List.of(SET_GAME);
     }
 
     @Override
     public GameTask getTask(Map<String, String> message) {
-        return new GameTask(setupDisplay(message), setupEvents());
+        return new GameTask(setupDisplay(message), setupEvents(message));
     }
 }

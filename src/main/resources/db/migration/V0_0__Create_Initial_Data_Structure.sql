@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS game(
 
 CREATE TABLE IF NOT EXISTS player(
     game_id UUID        NOT NULL,
-    dealer  BOOL        NOT NULL DEFAULT FALSE,
+    czar    BOOL        NOT NULL DEFAULT FALSE,
     score   INT         NOT NULL DEFAULT 0,
     email   VARCHAR(40) NOT NULL PRIMARY KEY,
     host    BOOL        NOT NULL DEFAULT FALSE,

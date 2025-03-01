@@ -4,6 +4,7 @@ public enum GameState {
     DRAFT,
     WAITING,
     SETUP,
+    CZAR,
     DEAL,
     PROMPT,
     RESPONSES,

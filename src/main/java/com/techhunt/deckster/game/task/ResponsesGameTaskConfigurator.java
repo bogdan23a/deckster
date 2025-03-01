@@ -7,6 +7,7 @@ import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.service.CardService;
 import com.techhunt.deckster.game.service.GameService;
+import com.techhunt.deckster.game.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import static com.techhunt.deckster.game.service.GameClient.EMAIL_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 import static com.techhunt.deckster.game.task.GameTaskFieldLabel.PROMPT;
 import static com.techhunt.deckster.game.task.GameTaskFieldLabel.RESPONSES;
+import static com.techhunt.deckster.game.task.GameTaskFieldLabel.OTHER_PLAYERS_TURN;
 import static com.techhunt.deckster.game.task.InputType.CARD_PICKER;
 
 @Service
@@ -29,13 +31,18 @@ public class ResponsesGameTaskConfigurator extends GameTaskConfigurator {
 
     private final GameService gameService;
     private final CardService cardService;
+    private final PlayerService playerService;
 
     @Override
     public Map<String, GameTaskFieldValue> setupDisplay(Map<String, String> message) {
         String gameId = message.get(GAME_ID_HEADER);
         String email = message.get(EMAIL_HEADER);
         Game game = gameService.findById(UUID.fromString(gameId));
-        Player player = game.getPlayers().stream().filter(gamePlayer -> gamePlayer.getEmail().equals(email))
+        Player player = playerService.findByEmail(email);
+        if (player.isCzar()) {
+            return Map.of(OTHER_PLAYERS_TURN.getMessage(), new ResponseTaskFieldValue());
+        }
+        player = game.getPlayers().stream().filter(gamePlayer -> gamePlayer.getEmail().equals(email))
                 .findFirst().orElse(null);
         List<Card> hand = player.getHand().stream()
                 .filter(Predicate.not(GameCard::isUsed))
@@ -50,7 +57,12 @@ public class ResponsesGameTaskConfigurator extends GameTaskConfigurator {
     }
 
     @Override
-    public List<GameEvent> setupEvents() {
+    public List<GameEvent> setupEvents(Map<String, String> message) {
+        String email = message.get(EMAIL_HEADER);
+        Player player = playerService.findByEmail(email);
+        if (player.isCzar()) {
+            return List.of();
+        }
         return List.of(RESPOND);
     }
 }

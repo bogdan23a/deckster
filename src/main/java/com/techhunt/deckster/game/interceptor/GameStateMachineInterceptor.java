@@ -4,6 +4,7 @@ import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.enums.GameState;
 import com.techhunt.deckster.game.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.StateMachine;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GameStateMachineInterceptor extends StateMachineInterceptorAdapter<GameState, GameEvent> {
@@ -44,7 +46,7 @@ public class GameStateMachineInterceptor extends StateMachineInterceptorAdapter<
 
     @Override
     public void postStateChange(State<GameState, GameEvent> state, Message<GameEvent> message, Transition<GameState, GameEvent> transition, StateMachine<GameState, GameEvent> stateMachine, StateMachine<GameState, GameEvent> rootStateMachine) {
-
+        log.debug("State change to " + state.getId());
     }
 
     @Override
@@ -59,6 +61,6 @@ public class GameStateMachineInterceptor extends StateMachineInterceptorAdapter<
 
     @Override
     public Exception stateMachineError(StateMachine<GameState, GameEvent> stateMachine, Exception exception) {
-        return exception;
+        return super.stateMachineError(stateMachine, exception);
     }
 }

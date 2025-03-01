@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -56,5 +57,10 @@ public class GameCardClient implements GameCardService {
     @Transactional
     public void deleteByGameId(UUID gameId) {
         repository.removeByGameId(gameId);
+    }
+
+    @Override
+    public void removeAll(Set<GameCard> hand) {
+        repository.deleteAll(hand);
     }
 }

@@ -7,6 +7,7 @@ import com.techhunt.deckster.game.enums.GameState;
 import com.techhunt.deckster.game.service.DeckService;
 import com.techhunt.deckster.game.service.GameService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class SetGameDeckAction implements Action<GameState, GameEvent> {
 
     private final GameService gameService;
     private final DeckService deckService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
@@ -31,5 +33,6 @@ public class SetGameDeckAction implements Action<GameState, GameEvent> {
         Game game = gameService.findById(UUID.fromString(gameId));
         game.setDeck(deck);
         gameService.save(game);
+        simpMessagingTemplate.convertAndSend("/public", "");
     }
 }

@@ -3,8 +3,6 @@ package com.techhunt.deckster.game.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -34,13 +32,23 @@ public class Player {
     @Column(name = "game_id")
     private UUID gameId;
 
-    private boolean dealer;
+    private boolean czar;
 
     private int score;
 
-    public Player(String email, UUID gameId, boolean dealer) {
+    private boolean host;
+
+    public Player(String email, UUID gameId, boolean czar) {
         this.email = email;
         this.gameId = gameId;
-        this.dealer = dealer;
+        this.czar = czar;
+    }
+
+    public Player(String email) {
+        this.email = email;
+    }
+
+    public boolean isWinner() {
+        return score == 10;
     }
 }

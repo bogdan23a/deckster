@@ -5,6 +5,7 @@ import com.techhunt.deckster.game.entity.Game;
 import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.repository.GameRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,9 +45,12 @@ public class GameClient implements GameService {
     }
 
     @Override
+    @Transactional
     public Game newGame(String email) {
         Game game = repository.save(new Game(DRAFT));
-        playerService.save(new Player(email, game.getId(), true));
+        Player player = new Player(email, game.getId(), true);
+        player.setHost(true);
+        playerService.save(player);
         return game;
     }
 
@@ -56,6 +60,7 @@ public class GameClient implements GameService {
     }
 
     @Override
+    @Transactional
     public void save(Game game) {
         repository.save(game);
     }

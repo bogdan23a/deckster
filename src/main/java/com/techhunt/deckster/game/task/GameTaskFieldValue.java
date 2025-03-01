@@ -1,11 +1,15 @@
 package com.techhunt.deckster.game.task;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class GameTaskFieldValue {
-    private final InputType inputType;
-    private final List<?> values;
+    protected InputType inputType;
+    protected List<?> values;
 }

@@ -8,12 +8,14 @@ import com.techhunt.deckster.game.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.awt.*;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,9 +50,10 @@ public class GameStateMachineClient implements GameStateMachineService {
         return stateMachine;
     }
 
-    private void sendEvent(Map<String, String> messageBody, StateMachine<GameState, GameEvent> stateMachine, GameEvent gameEvent) {
+    @Async
+    public void sendEvent(Map<String, String> messageBody, StateMachine<GameState, GameEvent> stateMachine, GameEvent gameEvent) {
         MessageBuilder<GameEvent> message = MessageBuilder.withPayload(gameEvent);
         messageBody.forEach(message::setHeader);
-        stateMachine.sendEvent(Mono.just(message.build())).subscribe();
+        stateMachine.sendEvent(Mono.just(message.build())).subscribe(value -> log.debug("Event sent: {}", gameEvent), error -> log.error("Error sending event: " + gameEvent, error));
     }
 }

@@ -5,21 +5,24 @@ import com.techhunt.deckster.game.action.AddPlayerToGameAction;
 import com.techhunt.deckster.game.action.DealCardsAction;
 import com.techhunt.deckster.game.action.IncrementScoreAction;
 import com.techhunt.deckster.game.action.ResetGameCardsAction;
+import com.techhunt.deckster.game.action.SendRefreshMessageAction;
+import com.techhunt.deckster.game.action.SetCzarAction;
 import com.techhunt.deckster.game.action.SetGameDeckAction;
 import com.techhunt.deckster.game.action.SetRoundPromptAction;
 import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.enums.GameState;
 import com.techhunt.deckster.game.guard.IsAllPlayersRespondedGuard;
 import com.techhunt.deckster.game.guard.IsEndGameGuard;
+import com.techhunt.deckster.game.guard.IsPlayerLoggedInGuard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
+import org.springframework.statemachine.guard.Guard;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
 
@@ -30,6 +33,7 @@ import static com.techhunt.deckster.game.enums.GameEvent.JOIN;
 import static com.techhunt.deckster.game.enums.GameEvent.PICK_WINNER;
 import static com.techhunt.deckster.game.enums.GameEvent.RESPOND;
 import static com.techhunt.deckster.game.enums.GameEvent.SET_GAME;
+import static com.techhunt.deckster.game.enums.GameState.CZAR;
 import static com.techhunt.deckster.game.enums.GameState.DEAL;
 import static com.techhunt.deckster.game.enums.GameState.DRAFT;
 import static com.techhunt.deckster.game.enums.GameState.END_GAME;
@@ -54,6 +58,9 @@ public class StateMachineConfiguration extends StateMachineConfigurerAdapter<Gam
     private final AddPlayerResponseAction addPlayerResponseAction;
     private final IncrementScoreAction incrementScoreAction;
     private final ResetGameCardsAction resetGameCardsAction;
+    private final SetCzarAction setCzarAction;
+    private final SendRefreshMessageAction sendRefreshMessageAction;
+    private final IsPlayerLoggedInGuard isPlayerLoggedInGuard;
 
     @Override
     public void configure(StateMachineStateConfigurer<GameState, GameEvent> configurer) throws Exception {
@@ -68,19 +75,24 @@ public class StateMachineConfiguration extends StateMachineConfigurerAdapter<Gam
     @Override
     public void configure(StateMachineTransitionConfigurer<GameState, GameEvent> configurer) throws Exception {
         configurer.withExternal()
-                    .source(DRAFT).target(SETUP).event(SET_GAME).and()
+                    .source(DRAFT).target(SETUP).action(sendRefreshMessageAction).event(SET_GAME).and()
                 .withExternal()
-                    .source(DRAFT).target(DRAFT).action(addPlayerToGameAction).event(JOIN).and()
+                    .source(DRAFT).target(DRAFT).guard(isPlayerLoggedInGuard).action(addPlayerToGameAction).event(JOIN).and()
                 .withExternal()
                     .source(SETUP).target(DEAL).action(setGameDeckAction).event(GAME_SET).and()
                 .withExternal()
-                    .source(DEAL).target(PROMPT).action(dealCardsAction).and()
+                    .source(DEAL).target(CZAR).action(dealCardsAction).and()
+                .withExternal()
+                    .source(CZAR).target(PROMPT).action(setCzarAction).and()
                 .withExternal()
                     .source(PROMPT).target(RESPONSES).action(setRoundPromptAction).and()
                 .withExternal()
-                    .source(RESPONSES).target(RESPONSES_CHOICE).event(RESPOND).and()
+                    .source(RESPONSES).target(RESPONSES_CHOICE).action(addPlayerResponseAction).event(RESPOND).and()
                 .withChoice()
-                    .source(RESPONSES_CHOICE).first(REWARD, isAllPlayersRespondedGuard, addPlayerResponseAction).last(RESPONSES, addPlayerResponseAction).and()
+                    .source(RESPONSES_CHOICE)
+                        .first(REWARD, isAllPlayersRespondedGuard)
+                        .last(RESPONSES)
+                    .and()
                 .withExternal()
                     .source(REWARD).target(WINNER).action(incrementScoreAction).event(PICK_WINNER).and()
                 .withChoice()

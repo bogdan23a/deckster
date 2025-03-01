@@ -20,7 +20,7 @@ public interface GameCardRepository extends JpaRepository<GameCard, UUID> {
 
     int countByGameId(UUID gameId);
 
-    @Query("SELECT COUNT(*) FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :typeId")
+    @Query("SELECT COUNT(*) FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :typeId AND gc.email IS NOT NULL")
     int countByGameIdAndType(UUID gameId, UUID typeId);
 
     @Query("SELECT c FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :cardType AND gc.used = :used AND gc.email IS NOT NULL")

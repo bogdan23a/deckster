@@ -4,6 +4,7 @@ import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.GameCard;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface GameCardService {
@@ -15,4 +16,5 @@ public interface GameCardService {
     int countByGameIdAndType(UUID gameId, UUID typeId);
     List<Card> findbyGameIdAndCardTypeAndUsed(UUID gameId, UUID cardType, boolean isUsed);
     void deleteByGameId(UUID gameId);
+    void removeAll(Set<GameCard> hand);
 }

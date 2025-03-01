@@ -5,6 +5,7 @@ import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.enums.GameState;
 import com.techhunt.deckster.game.service.GameCardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 public class AddPlayerResponseAction implements Action<GameState, GameEvent> {
 
     private final GameCardService gameCardService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {

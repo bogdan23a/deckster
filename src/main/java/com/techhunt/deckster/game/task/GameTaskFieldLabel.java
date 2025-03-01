@@ -10,7 +10,9 @@ public enum GameTaskFieldLabel {
     PLAYERS("Table"),
     PROMPT(""),
     RESPONSES("Choose The Response"),
-    WINNER("Choose The Winner");
+    WINNER("Choose The Winner"),
+    HOST_SETUP("The game is being set up"),
+    OTHER_PLAYERS_TURN("Waiting for other players to finish their turn");
 
     private final String message;
 }

@@ -6,6 +6,7 @@ import com.techhunt.deckster.game.service.CardTypeService;
 import com.techhunt.deckster.game.service.GameCardService;
 import com.techhunt.deckster.game.service.PlayerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.guard.Guard;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class IsAllPlayersRespondedGuard implements Guard<GameState, GameEvent> {
     private final PlayerService playerService;
     private final GameCardService gameCardService;
     private final CardTypeService cardTypeService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public boolean evaluate(StateContext<GameState, GameEvent> context) {
@@ -28,6 +30,11 @@ public class IsAllPlayersRespondedGuard implements Guard<GameState, GameEvent> {
         UUID responseType = cardTypeService.findByName("Response").getId();
         int playerCount = playerService.countByGameId(UUID.fromString(gameId));
         int roundResponses = gameCardService.countByGameIdAndType(UUID.fromString(gameId), responseType);
-        return roundResponses > playerCount - 1;
+        boolean isAllPlayersResponded = roundResponses >= playerCount - 1;
+        if (isAllPlayersResponded) {
+            simpMessagingTemplate.convertAndSend("/public", "");
+            return true;
+        }
+        return false;
     }
 }
