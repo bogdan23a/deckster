@@ -36,6 +36,7 @@ public class AddPlayerToGameAction implements Action<GameState, GameEvent> {
         player.setGameId(UUID.fromString(gameId));
         player.setCzar(false);
         gameCardService.removeAll(player.getHand());
+        player.setHand(null);
         playerService.save(player);
         simpMessagingTemplate.convertAndSend("/public", "x");
     }

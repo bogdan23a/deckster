@@ -30,6 +30,8 @@ public class GameCard implements Serializable {
     private UUID gameId;
     private UUID cardId;
     private boolean used;
+
+    @Column(name = "player_email")
     private String email;
     private Timestamp usedAt;
 

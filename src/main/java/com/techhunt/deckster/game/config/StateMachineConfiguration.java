@@ -61,6 +61,7 @@ public class StateMachineConfiguration extends StateMachineConfigurerAdapter<Gam
     private final SetCzarAction setCzarAction;
     private final SendRefreshMessageAction sendRefreshMessageAction;
     private final IsPlayerLoggedInGuard isPlayerLoggedInGuard;
+    private final IsEndGameGuard isEndGameGuard;
 
     @Override
     public void configure(StateMachineStateConfigurer<GameState, GameEvent> configurer) throws Exception {
@@ -96,7 +97,7 @@ public class StateMachineConfiguration extends StateMachineConfigurerAdapter<Gam
                 .withExternal()
                     .source(REWARD).target(WINNER).action(incrementScoreAction).event(PICK_WINNER).and()
                 .withChoice()
-                    .source(WINNER).first(END_GAME, new IsEndGameGuard()).last(DEAL, resetGameCardsAction);
+                    .source(WINNER).first(END_GAME, isEndGameGuard).last(DEAL, resetGameCardsAction);
     }
 
     @Override
