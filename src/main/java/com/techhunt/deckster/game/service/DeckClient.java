@@ -72,13 +72,12 @@ public class DeckClient implements DeckService {
     @Override
     public void dealHand(Player player, Deck deck) {
         List<GameCard> usedCards = gameCardService.findByGameId(player.getGameId()).stream().filter(GameCard::isUsed).toList();
-        Set<Card> responseCards = deck.getCards().stream()
+        List<Card> responseCards = deck.getCards().stream()
                 .filter(card -> Objects.equals(card.getType().getName(), "Response"))
                 .filter(card -> usedCards.stream().noneMatch(gameCard -> Objects.equals(gameCard.getCardId(), card.getId())))
-                .collect(Collectors.toSet());
-        List<Card> deckCards = new ArrayList<>(responseCards);
-        Collections.shuffle(deckCards);
-        List<GameCard> hand = deckCards.subList(0, 7).stream().map(card -> new GameCard(player.getGameId(), card.getId())).toList();
+                .collect(Collectors.toList());
+        Collections.shuffle(responseCards);
+        List<GameCard> hand = responseCards.subList(0, 7).stream().map(card -> new GameCard(player.getGameId(), card.getId())).toList();
         List<GameCard> unusedCards = player.getHand().stream().filter(Predicate.not(GameCard::isUsed)).toList();
         if (unusedCards.isEmpty()) {
             player.setHand(new HashSet<>(hand));

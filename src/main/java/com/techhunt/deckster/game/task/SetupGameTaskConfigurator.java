@@ -23,14 +23,26 @@ public class SetupGameTaskConfigurator extends GameTaskConfigurator {
     private final DeckService deckService;
     private final PlayerService playerService;
 
-    public Map<String, GameTaskFieldValue> setupDisplay(Map<String, String> message) {
+    public List<GameTaskDetail> setupDetails(Map<String, String> message) {
         String email = message.get(EMAIL_HEADER);
         Player player = playerService.findByEmail(email);
         if (!player.isHost()) {
-            return Map.of(HOST_SETUP.getMessage(), new SetupTaskFieldValue());
+            return List.of(
+                    GameTaskDetail.builder()
+                            .order(1)
+                            .label(HOST_SETUP)
+                            .input(GameTaskInput.builder().build())
+                            .build()
+            );
         }
         List<?> decks = deckService.findAll();
-        return Map.of(DECK.getMessage(), new SetupTaskFieldValue(DECK_PICKER, decks));
+        return List.of(
+                GameTaskDetail.builder()
+                        .order(1)
+                        .label(DECK)
+                        .input(GameTaskInput.builder().inputType(DECK_PICKER).values(decks).build())
+                        .build()
+        );
     }
 
     public List<GameEvent> setupEvents(Map<String, String> message) {

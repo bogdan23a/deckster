@@ -5,6 +5,7 @@ import com.techhunt.deckster.game.action.AddPlayerToGameAction;
 import com.techhunt.deckster.game.action.DealCardsAction;
 import com.techhunt.deckster.game.action.IncrementScoreAction;
 import com.techhunt.deckster.game.action.ResetGameCardsAction;
+import com.techhunt.deckster.game.action.ResetPlayerScoreAction;
 import com.techhunt.deckster.game.action.SendRefreshMessageAction;
 import com.techhunt.deckster.game.action.SetCzarAction;
 import com.techhunt.deckster.game.action.SetGameDeckAction;
@@ -17,6 +18,7 @@ import com.techhunt.deckster.game.guard.IsPlayerLoggedInGuard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -62,6 +64,7 @@ public class StateMachineConfiguration extends StateMachineConfigurerAdapter<Gam
     private final SendRefreshMessageAction sendRefreshMessageAction;
     private final IsPlayerLoggedInGuard isPlayerLoggedInGuard;
     private final IsEndGameGuard isEndGameGuard;
+    private final ResetPlayerScoreAction resetPlayerScoreAction;
 
     @Override
     public void configure(StateMachineStateConfigurer<GameState, GameEvent> configurer) throws Exception {
@@ -76,9 +79,9 @@ public class StateMachineConfiguration extends StateMachineConfigurerAdapter<Gam
     @Override
     public void configure(StateMachineTransitionConfigurer<GameState, GameEvent> configurer) throws Exception {
         configurer.withExternal()
-                    .source(DRAFT).target(SETUP).action(sendRefreshMessageAction).event(SET_GAME).and()
+                    .source(DRAFT).target(SETUP).action(sendRefreshMessageAction).action(resetPlayerScoreAction).event(SET_GAME).and()
                 .withExternal()
-                    .source(DRAFT).target(DRAFT).guard(isPlayerLoggedInGuard).action(addPlayerToGameAction).event(JOIN).and()
+                    .source(DRAFT).target(DRAFT).guard(isPlayerLoggedInGuard).action(addPlayerToGameAction).action(resetPlayerScoreAction).event(JOIN).and()
                 .withExternal()
                     .source(SETUP).target(DEAL).action(setGameDeckAction).event(GAME_SET).and()
                 .withExternal()

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.techhunt.deckster.game.enums.GameState.DRAFT;
@@ -75,13 +76,15 @@ public class GameClient implements GameService {
     public void choosePrompt(UUID gameId, String email) {
         Game game = findById(gameId);
         List<GameCard> gameCards = gameCardService.findByGameId(gameId);
-        Set<UUID> usedCards = gameCards.stream().filter(GameCard::isUsed).map(GameCard::getCardId).collect(Collectors.toSet());
-        List<Card> prompts = game.getDeck().getCards().stream()
+        Set<GameCard> usedCards = gameCards.stream().filter(GameCard::isUsed).collect(Collectors.toSet());
+        List<Card> unusedPrompts = game.getDeck().getCards().stream()
                 .filter(card -> Objects.equals(card.getType().getName(), "Prompt"))
-                .filter(card -> !usedCards.contains(card.getId()))
+                .filter(card -> usedCards.stream()
+                        .map(GameCard::getCardId)
+                        .noneMatch(cardId -> Objects.equals(cardId, card.getId())))
                 .collect(Collectors.toList());
-        Collections.shuffle(prompts);
-        GameCard prompt = prompts.stream().findFirst()
+        Collections.shuffle(unusedPrompts);
+        GameCard prompt = unusedPrompts.stream().findFirst()
                 .map(card -> new GameCard(gameId, card.getId(), email, true, Timestamp.from(Instant.now())))
                 .orElse(null);
         gameCardService.save(prompt);
@@ -95,8 +98,9 @@ public class GameClient implements GameService {
                     Card card = cardService.findById(gameCard.getCardId());
                     return "Prompt".equals(card.getType().getName());
                 })
-                .sorted(((Comparator.comparing(GameCard::getUsedAt))))
-                .toList();
+                .sorted(Comparator.comparing(GameCard::getUsedAt))
+                .collect(Collectors.toList());
+        Collections.reverse(promptGameCards);
         Card prompt = promptGameCards.stream()
                 .map(GameCard::getCardId)
                 .map(cardService::findById)

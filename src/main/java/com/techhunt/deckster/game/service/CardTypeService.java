@@ -10,6 +10,6 @@ public interface CardTypeService {
     List<String> getAllNames();
     CardType save(CardType type);
 
-    CardType getId(String typeName);
+    CardType getByName(String typeName);
     CardType findByName(String name);
 }

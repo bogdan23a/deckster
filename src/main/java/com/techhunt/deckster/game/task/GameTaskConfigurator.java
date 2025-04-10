@@ -8,11 +8,10 @@ import java.util.Map;
 
 public abstract class GameTaskConfigurator {
 
-
     public GameTask getTask(Map<String, String> message) {
-        return new GameTask(setupDisplay(message), setupEvents(message));
+        return new GameTask(setupDetails(message), setupEvents(message));
     }
 
-    public abstract Map<String, GameTaskFieldValue> setupDisplay(Map<String, String> message);
+    public abstract List<GameTaskDetail> setupDetails(Map<String, String> message);
     public abstract List<GameEvent> setupEvents(Map<String, String> message);
 }

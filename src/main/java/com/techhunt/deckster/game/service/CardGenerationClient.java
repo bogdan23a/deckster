@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,11 +39,25 @@ public class CardGenerationClient implements CardGenerationService {
                     if (entry.getKey().isEmpty() || entry.getValue().isEmpty()) {
                         return null;
                     }
+                    CardType type = cardTypeService.getByName(entry.getKey());
                     return entry.getValue().stream()
-                            .map(content -> new Card(content, cardTypeService.getId(entry.getKey())));
+                            .map(content -> new Card(content, type, getPrompts(content, type)));
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
+    }
+
+    private int getPrompts(String content, CardType type) {
+        if (!Objects.equals(type.getName(), "Prompt")) {
+            return 0;
+        }
+        Pattern pattern = Pattern.compile("______");
+        Matcher matcher = pattern.matcher(content);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count > 0 ? count : 1;
     }
 
     private Map<String, List<String>> getCards(String filePath) {

@@ -12,7 +12,13 @@ public enum GameTaskFieldLabel {
     RESPONSES("Choose The Response"),
     WINNER("Choose The Winner"),
     HOST_SETUP("The game is being set up"),
-    OTHER_PLAYERS_TURN("Waiting for other players to finish their turn");
+    OTHER_PLAYERS_TURN("Waiting for other players to finish their turn"),
+    SCORE("Score"),
+    SHARE_GAME("Share this game with your friends");
 
     private final String message;
+
+    public String toString() {
+        return message;
+    }
 }

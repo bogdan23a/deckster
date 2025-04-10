@@ -1,11 +1,16 @@
 package com.techhunt.deckster.game.entity;
 
 import com.techhunt.deckster.game.enums.GameEvent;
-import com.techhunt.deckster.game.task.GameTaskFieldValue;
+import com.techhunt.deckster.game.task.GameTaskDetail;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
-public record GameTask(Map<String, GameTaskFieldValue> display, List<GameEvent> events) {
-
+@Data
+@AllArgsConstructor
+public class GameTask {
+    List<GameTaskDetail> details;
+//    Map<GameTaskFieldLabel, GameTaskFieldValue> display;
+    List<GameEvent> events;
 }

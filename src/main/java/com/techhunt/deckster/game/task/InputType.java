@@ -5,4 +5,6 @@ public enum InputType {
     DECK_PICKER,
     CARD_PICKER,
     PROMPT,
+    SCORE,
+    LINK,
 }

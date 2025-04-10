@@ -39,6 +39,8 @@ public class Card implements Serializable {
     @Column(name = "player_email")
     private String playerEmail;
 
+    private int prompts;
+
     public Card(String content, UUID deckId, CardType type) {
         this.content = content;
         this.deckId = deckId;
@@ -48,5 +50,11 @@ public class Card implements Serializable {
     public Card(String content, CardType type) {
         this.content = content;
         this.type = type;
+    }
+
+    public Card(String content, CardType type, int prompts) {
+        this.content = content;
+        this.type = type;
+        this.prompts = prompts;
     }
 }

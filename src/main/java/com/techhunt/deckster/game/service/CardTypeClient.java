@@ -36,7 +36,7 @@ public class CardTypeClient implements CardTypeService {
     }
 
     @Override
-    public CardType getId(String typeName) {
+    public CardType getByName(String typeName) {
         return repository.findByName(typeName);
     }
 

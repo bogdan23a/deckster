@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS card(
     content      VARCHAR(200),
     type_id      UUID,
     deck_id      UUID,
+    prompts      INT         NOT NULL DEFAULT 0,
 
     CONSTRAINT deck_id_foreign_key FOREIGN KEY (deck_id) REFERENCES deck(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT card_type_foreign_key FOREIGN KEY (type_id) REFERENCES card_type(id) ON UPDATE CASCADE ON DELETE CASCADE
