@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.techhunt.deckster.game.enums.GameState.DRAFT;
@@ -31,7 +30,7 @@ public class GameClient implements GameService {
     public static final String GAME_ID_HEADER = "game_id";
     public static final String EMAIL_HEADER = "email";
     public static final String DECK_ID_HEADER = "deck_id";
-    public static final String CARD_ID_HEADER = "card_id";
+    public static final String CARD_IDS_HEADER = "card_ids";
 
     private final GameRepository repository;
     private final PlayerService playerService;

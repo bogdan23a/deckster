@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -23,8 +24,8 @@ public interface GameCardRepository extends JpaRepository<GameCard, UUID> {
     @Query("SELECT COUNT(*) FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :typeId AND gc.email IS NOT NULL")
     int countByGameIdAndType(UUID gameId, UUID typeId);
 
-    @Query("SELECT c FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :cardType AND gc.used = :used AND gc.email IS NOT NULL")
-    List<Card> findByGameIdAndCardTypeAndUsedAndEmailNotNull(UUID gameId, UUID cardType, boolean used);
+    @Query("SELECT gc.email, JSON_AGG(JSON_BUILD_OBJECT('id', c.id, 'content', c.content, 'deckId', c.deckId, 'type', c.type, 'prompts', c.prompts)) AS cards FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :cardType AND gc.used = :used AND gc.email IS NOT NULL GROUP BY gc.email")
+    List<Object[]> findByGameIdAndCardTypeAndUsedAndEmailNotNullGroupByEmail(UUID gameId, UUID cardType, boolean used);
 
     void removeByGameId(UUID gameId);
 }

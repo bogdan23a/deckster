@@ -48,7 +48,7 @@ public class RewardGameTaskConfigurator extends GameTaskConfigurator{
             );
         }
         UUID responseCardType = cardTypeService.findByName("Response").getId();
-        List<Card> responses = gameCardService.findbyGameIdAndCardTypeAndUsed(UUID.fromString(gameId), responseCardType, true);
+        Map<String, List<Card>> responses = gameCardService.findbyGameIdAndCardTypeAndUsed(UUID.fromString(gameId), responseCardType, true);
         List<Pair<String, String>> scoreMap = gameService.findById(UUID.fromString(gameId))
                 .getPlayers()
                 .stream()
@@ -63,7 +63,7 @@ public class RewardGameTaskConfigurator extends GameTaskConfigurator{
                 GameTaskDetail.builder()
                         .order(2)
                         .label(WINNER)
-                        .input(GameTaskInput.builder().inputType(InputType.CARD_PICKER).values(responses).build())
+                        .input(GameTaskInput.builder().inputType(InputType.CARD_PICKER).values(responses.values().stream().toList()).build())
                         .build(),
                 GameTaskDetail.builder()
                         .order(3)

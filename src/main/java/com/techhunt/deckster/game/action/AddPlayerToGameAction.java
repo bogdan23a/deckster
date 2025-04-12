@@ -11,6 +11,7 @@ import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static com.techhunt.deckster.game.service.GameClient.EMAIL_HEADER;
@@ -34,7 +35,7 @@ public class AddPlayerToGameAction implements Action<GameState, GameEvent> {
         }
         player.setGameId(UUID.fromString(gameId));
         player.setCzar(false);
-        gameCardService.removeAll(player.getHand());
+        gameCardService.removeAll(player.getHand() != null ? player.getHand() : Set.of());
         player.setHand(null);
         playerService.save(player);
         simpMessagingTemplate.convertAndSend("/public", "x");

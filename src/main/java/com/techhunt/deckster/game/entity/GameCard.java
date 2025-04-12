@@ -35,6 +35,9 @@ public class GameCard implements Serializable {
     private String email;
     private Timestamp usedAt;
 
+    @Column(name = "response_order")
+    private int responseOrder;
+
     public GameCard(UUID gameId, UUID cardId) {
         this.gameId = gameId;
         this.cardId = cardId;

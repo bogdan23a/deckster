@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.techhunt.deckster.game.service.GameClient.CARD_ID_HEADER;
+import static com.techhunt.deckster.game.service.GameClient.CARD_IDS_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.EMAIL_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
@@ -25,13 +27,18 @@ public class AddPlayerResponseAction implements Action<GameState, GameEvent> {
 
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
+        AtomicInteger index = new AtomicInteger();
         String gameId = (String) context.getMessageHeader(GAME_ID_HEADER);
-        String cardId = (String) context.getMessageHeader(CARD_ID_HEADER);
+        String cardIds = (String) context.getMessageHeader(CARD_IDS_HEADER);
         String email = (String) context.getMessageHeader(EMAIL_HEADER);
-        GameCard card = gameCardService.findByGameIdAndCardId(UUID.fromString(gameId), UUID.fromString(cardId));
-        card.setUsed(true);
-        card.setUsedAt(Timestamp.from(Instant.now()));
-        card.setEmail(email);
-        gameCardService.save(card);
+        Arrays.stream(cardIds.split(","))
+                .forEach(id -> {
+                    GameCard card = gameCardService.findByGameIdAndCardId(UUID.fromString(gameId), UUID.fromString(id));
+                    card.setUsed(true);
+                    card.setUsedAt(Timestamp.from(Instant.now()));
+                    card.setEmail(email);
+                    card.setResponseOrder(index.getAndIncrement());
+                    gameCardService.save(card);
+                });
     }
 }

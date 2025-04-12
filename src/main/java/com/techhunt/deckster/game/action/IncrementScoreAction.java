@@ -1,6 +1,5 @@
 package com.techhunt.deckster.game.action;
 
-import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.enums.GameEvent;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-import static com.techhunt.deckster.game.service.GameClient.CARD_ID_HEADER;
+import static com.techhunt.deckster.game.service.GameClient.CARD_IDS_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
 @Service
@@ -27,7 +26,7 @@ public class IncrementScoreAction implements Action<GameState, GameEvent> {
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
         String gameId = (String) context.getMessageHeader(GAME_ID_HEADER);
-        String cardId = (String) context.getMessageHeader(CARD_ID_HEADER);
+        String cardId = (String) context.getMessageHeader(CARD_IDS_HEADER);
         GameCard card = gameCardService.findByGameIdAndCardId(UUID.fromString(gameId), UUID.fromString(cardId));
         Player player = playerService.findByEmail(card.getEmail());
         player.setScore(player.getScore() + 1);
