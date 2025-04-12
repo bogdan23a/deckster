@@ -38,6 +38,9 @@ public class GameCard implements Serializable {
     @Column(name = "response_order")
     private int responseOrder;
 
+    @Column(name = "response_group")
+    private UUID responseGroup;
+
     public GameCard(UUID gameId, UUID cardId) {
         this.gameId = gameId;
         this.cardId = cardId;

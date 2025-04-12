@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static com.techhunt.deckster.game.service.GameClient.CARD_IDS_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
+import static com.techhunt.deckster.game.service.GameClient.RESPONSE_GROUP_HEADER;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,8 @@ public class IncrementScoreAction implements Action<GameState, GameEvent> {
     @Override
     public void execute(StateContext<GameState, GameEvent> context) {
         String gameId = (String) context.getMessageHeader(GAME_ID_HEADER);
-        String cardId = (String) context.getMessageHeader(CARD_IDS_HEADER);
-        GameCard card = gameCardService.findByGameIdAndCardId(UUID.fromString(gameId), UUID.fromString(cardId));
+        String responseGroup = (String) context.getMessageHeader(RESPONSE_GROUP_HEADER);
+        GameCard card = gameCardService.findOneByGameIdAndResponseGroup(UUID.fromString(gameId), UUID.fromString(responseGroup));
         Player player = playerService.findByEmail(card.getEmail());
         player.setScore(player.getScore() + 1);
         playerService.save(player);

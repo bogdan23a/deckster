@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CardTypeClient implements CardTypeService {
@@ -43,6 +44,11 @@ public class CardTypeClient implements CardTypeService {
     @Override
     public CardType findByName(String name) {
         return repository.findByName(name);
+    }
+
+    @Override
+    public CardType findById(UUID typeId) {
+        return repository.findById(typeId).orElse(null);
     }
 
 }

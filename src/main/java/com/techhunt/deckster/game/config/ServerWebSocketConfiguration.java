@@ -14,17 +14,6 @@ public class ServerWebSocketConfiguration implements WebSocketMessageBrokerConfi
     public ServerWebSocketConfiguration() {
     }
 
-//    @Override
-//    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-//        registry.addHandler(webSocketHandler(),"/websocket").setAllowedOriginPatterns("*");
-//                .setWebSocketEnabled(true).setSessionCookieNeeded(false);
-//    }
-//
-//    @Bean
-//    public WebSocketHandler webSocketHandler() {
-//        return new ServerWebSocketHandler();
-//    }
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/websocket").setAllowedOriginPatterns("*");

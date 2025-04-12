@@ -31,6 +31,7 @@ public class GameClient implements GameService {
     public static final String EMAIL_HEADER = "email";
     public static final String DECK_ID_HEADER = "deck_id";
     public static final String CARD_IDS_HEADER = "card_ids";
+    public static final String RESPONSE_GROUP_HEADER = "response_group";
 
     private final GameRepository repository;
     private final PlayerService playerService;

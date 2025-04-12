@@ -31,6 +31,7 @@ public class AddPlayerResponseAction implements Action<GameState, GameEvent> {
         String gameId = (String) context.getMessageHeader(GAME_ID_HEADER);
         String cardIds = (String) context.getMessageHeader(CARD_IDS_HEADER);
         String email = (String) context.getMessageHeader(EMAIL_HEADER);
+        UUID responseGroup = UUID.randomUUID();
         Arrays.stream(cardIds.split(","))
                 .forEach(id -> {
                     GameCard card = gameCardService.findByGameIdAndCardId(UUID.fromString(gameId), UUID.fromString(id));
@@ -38,6 +39,7 @@ public class AddPlayerResponseAction implements Action<GameState, GameEvent> {
                     card.setUsedAt(Timestamp.from(Instant.now()));
                     card.setEmail(email);
                     card.setResponseOrder(index.getAndIncrement());
+                    card.setResponseGroup(responseGroup);
                     gameCardService.save(card);
                 });
     }

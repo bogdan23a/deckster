@@ -24,8 +24,29 @@ public interface GameCardRepository extends JpaRepository<GameCard, UUID> {
     @Query("SELECT COUNT(*) FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :typeId AND gc.email IS NOT NULL")
     int countByGameIdAndType(UUID gameId, UUID typeId);
 
-    @Query("SELECT gc.email, JSON_AGG(JSON_BUILD_OBJECT('id', c.id, 'content', c.content, 'deckId', c.deckId, 'type', c.type, 'prompts', c.prompts)) AS cards FROM GameCard AS gc JOIN Card AS c ON gc.cardId=c.id WHERE gc.gameId = :gameId AND c.type.id = :cardType AND gc.used = :used AND gc.email IS NOT NULL GROUP BY gc.email")
+    @Query("SELECT " +
+            "gc.email, " +
+            "JSON_AGG(JSON_BUILD_OBJECT(" +
+                "'id', c.id, " +
+                "'content', c.content, " +
+                "'deckId', c.deckId, " +
+                "'type', c.type, " +
+                "'prompts', c.prompts, " +
+                "'responseGroup', gc.responseGroup )) AS cards " +
+            "FROM GameCard AS gc " +
+            "JOIN Card AS c " +
+            "ON gc.cardId=c.id " +
+            "WHERE " +
+                "gc.gameId = :gameId " +
+                "AND c.type.id = :cardType " +
+                "AND gc.used = :used " +
+                "AND gc.email IS NOT NULL " +
+            "GROUP BY gc.email")
     List<Object[]> findByGameIdAndCardTypeAndUsedAndEmailNotNullGroupByEmail(UUID gameId, UUID cardType, boolean used);
 
     void removeByGameId(UUID gameId);
+
+    GameCard findOneByGameIdAndResponseGroup(UUID gameId, UUID responseGroup);
+
+    List<GameCard> findByGameIdAndResponseGroup(UUID gameId, UUID responseGroup);
 }

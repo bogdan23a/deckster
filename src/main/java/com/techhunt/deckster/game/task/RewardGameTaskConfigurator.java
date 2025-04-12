@@ -1,6 +1,7 @@
 package com.techhunt.deckster.game.task;
 
 import com.techhunt.deckster.game.entity.Card;
+import com.techhunt.deckster.game.entity.CardDto;
 import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.service.CardTypeService;
@@ -48,7 +49,7 @@ public class RewardGameTaskConfigurator extends GameTaskConfigurator{
             );
         }
         UUID responseCardType = cardTypeService.findByName("Response").getId();
-        Map<String, List<Card>> responses = gameCardService.findbyGameIdAndCardTypeAndUsed(UUID.fromString(gameId), responseCardType, true);
+        Map<String, List<CardDto>> responses = gameCardService.findbyGameIdAndCardTypeAndUsed(UUID.fromString(gameId), responseCardType, true);
         List<Pair<String, String>> scoreMap = gameService.findById(UUID.fromString(gameId))
                 .getPlayers()
                 .stream()

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techhunt.deckster.game.entity.Card;
-import com.techhunt.deckster.game.entity.CardType;
+import com.techhunt.deckster.game.entity.CardDto;
 import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.repository.GameCardRepository;
 import jakarta.transaction.Transactional;
@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,7 +58,7 @@ public class GameCardClient implements GameCardService {
     }
 
     @Override
-    public Map<String, List<Card>> findbyGameIdAndCardTypeAndUsed(UUID gameId, UUID cardType, boolean used) {
+    public Map<String, List<CardDto>> findbyGameIdAndCardTypeAndUsed(UUID gameId, UUID cardType, boolean used) {
         List<Object[]> result = repository.findByGameIdAndCardTypeAndUsedAndEmailNotNullGroupByEmail(gameId, cardType, used);
         return result.stream()
                 .collect(Collectors.toMap(
@@ -84,5 +82,10 @@ public class GameCardClient implements GameCardService {
     @Override
     public void removeAll(Set<GameCard> hand) {
         repository.deleteAll(hand);
+    }
+
+    @Override
+    public GameCard findOneByGameIdAndResponseGroup(UUID gameId, UUID responseGroup) {
+        return repository.findByGameIdAndResponseGroup(gameId, responseGroup).stream().findFirst().orElse(null);
     }
 }

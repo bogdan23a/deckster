@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS game_card(
     used   BOOL NOT NULL DEFAULT FALSE,
     used_at TIMESTAMP,
     response_order   INT NOT NULL DEFAULT 0,
+    response_group UUID,
+
     CONSTRAINT game_id_foreign_key FOREIGN KEY (game_id) REFERENCES game(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT card_id_foreign_key FOREIGN KEY (card_id) REFERENCES card(id) ON UPDATE CASCADE ON DELETE CASCADE
 );

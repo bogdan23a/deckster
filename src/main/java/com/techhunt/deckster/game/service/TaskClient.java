@@ -3,6 +3,7 @@ package com.techhunt.deckster.game.service;
 import com.techhunt.deckster.game.entity.GameTask;
 import com.techhunt.deckster.game.enums.GameState;
 import com.techhunt.deckster.game.task.DraftGameTaskConfigurator;
+import com.techhunt.deckster.game.task.EndGameTaskConfigurator;
 import com.techhunt.deckster.game.task.ResponsesGameTaskConfigurator;
 import com.techhunt.deckster.game.task.RewardGameTaskConfigurator;
 import com.techhunt.deckster.game.task.SetupGameTaskConfigurator;
@@ -21,6 +22,7 @@ public class TaskClient implements TaskService {
     private final SetupGameTaskConfigurator setupGameTaskConfigurator;
     private final ResponsesGameTaskConfigurator responsesGameTaskConfigurator;
     private final RewardGameTaskConfigurator rewardGameTaskConfigurator;
+    private final EndGameTaskConfigurator endGameTaskConfigurator;
 
     @Override
     public GameTask getTask(GameState gameState, Map<String, String> message) {
@@ -29,6 +31,7 @@ public class TaskClient implements TaskService {
             case SETUP -> setupGameTaskConfigurator.getTask(message);
             case RESPONSES -> responsesGameTaskConfigurator.getTask(message);
             case REWARD -> rewardGameTaskConfigurator.getTask(message);
+            case END_GAME -> endGameTaskConfigurator.getTask(message);
             default -> {
                 log.error("Invalid game state: {}", gameState);
                 yield null;
