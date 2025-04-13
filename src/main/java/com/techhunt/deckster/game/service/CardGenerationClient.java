@@ -3,13 +3,10 @@ package com.techhunt.deckster.game.service;
 import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.CardType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +24,6 @@ import java.util.stream.Collectors;
 public class CardGenerationClient implements CardGenerationService {
 
     private final CardTypeService cardTypeService;
-    private final ResourceLoader loader;
 
     @Override
     public Set<Card> generate(String filePath) {
@@ -63,11 +59,11 @@ public class CardGenerationClient implements CardGenerationService {
 
     private Map<String, List<String>> getCards(String filePath) {
         Map<String, List<String>> cards = new HashMap<>();
-        Resource resource = loader.getResource("classpath:" + filePath);
-        if (!resource.exists()) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+        if (inputStream == null) {
             throw new IllegalArgumentException("File not found: " + filePath);
         }
-        try (Scanner scanner = new Scanner(resource.getFile())) {
+        try (Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 String[] entries = scanner.nextLine().split(",");
                 if (entries.length < 2) {
@@ -83,7 +79,7 @@ public class CardGenerationClient implements CardGenerationService {
                 }
             }
             return cards;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Error reading file: " + filePath, e);
         }
     }
