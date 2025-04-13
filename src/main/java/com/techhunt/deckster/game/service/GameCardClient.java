@@ -93,4 +93,9 @@ public class GameCardClient implements GameCardService {
     public int countResponseGroupsByGameIdAndType(UUID gameId, UUID cardType) {
         return repository.countResponseGroupsByGameIdAndType(gameId, cardType);
     }
+
+    @Override
+    public List<GameCard> findByEmailAndCardTypeAndUsed(String email, String cardType, boolean used) {
+        return repository.findByEmailAndCardTypeAndUsed(email, cardType, used);
+    }
 }

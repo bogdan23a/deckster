@@ -6,6 +6,7 @@ import com.techhunt.deckster.game.entity.GameCard;
 import com.techhunt.deckster.game.entity.Player;
 import com.techhunt.deckster.game.enums.GameEvent;
 import com.techhunt.deckster.game.service.CardService;
+import com.techhunt.deckster.game.service.GameCardService;
 import com.techhunt.deckster.game.service.GameService;
 import com.techhunt.deckster.game.service.PlayerService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class ResponsesGameTaskConfigurator extends GameTaskConfigurator {
     private final GameService gameService;
     private final CardService cardService;
     private final PlayerService playerService;
+    private final GameCardService gameCardService;
 
     @Override
     public List<GameTaskDetail> setupDetails(Map<String, String> message) {
@@ -53,6 +55,16 @@ public class ResponsesGameTaskConfigurator extends GameTaskConfigurator {
         }
         player = game.getPlayers().stream().filter(gamePlayer -> gamePlayer.getEmail().equals(email))
                 .findFirst().orElse(null);
+        List<GameCard> usedCards = gameCardService.findByEmailAndCardTypeAndUsed(email, "Response", true);
+        if (!usedCards.isEmpty()) {
+            return List.of(
+                    GameTaskDetail.builder()
+                            .order(1)
+                            .label(OTHER_PLAYERS_TURN)
+                            .input(GameTaskInput.builder().inputType(InputType.PROMPT).values(List.of(prompt)).build())
+                            .build()
+            );
+        }
         List<Card> hand = player.getHand().stream()
                 .filter(Predicate.not(GameCard::isUsed))
                 .map(GameCard::getCardId)

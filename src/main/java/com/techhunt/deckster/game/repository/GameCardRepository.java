@@ -57,4 +57,12 @@ public interface GameCardRepository extends JpaRepository<GameCard, UUID> {
                 "gc.gameId = :gameId " +
                 "AND gc.cardId IN (SELECT c.id FROM Card AS c WHERE c.type.id = :cardType)")
     int countResponseGroupsByGameIdAndType(UUID gameId, UUID cardType);
+
+    @Query("SELECT gc " +
+            "FROM GameCard gc " +
+            "WHERE " +
+                "gc.email = :email " +
+                "AND gc.cardId IN (SELECT c.id FROM Card c WHERE c.type.name = :cardType) " +
+                "AND gc.used = :used")
+    List<GameCard> findByEmailAndCardTypeAndUsed(String email, String cardType, boolean used);
 }

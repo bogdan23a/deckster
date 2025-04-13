@@ -21,4 +21,5 @@ public interface GameCardService {
     void removeAll(Set<GameCard> hand);
     GameCard findOneByGameIdAndResponseGroup(UUID gameId, UUID responseGroup);
     int countResponseGroupsByGameIdAndType(UUID gameId, UUID cardType);
+    List<GameCard> findByEmailAndCardTypeAndUsed(String email, String cardType, boolean used);
 }
