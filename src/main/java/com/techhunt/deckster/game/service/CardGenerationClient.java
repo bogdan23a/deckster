@@ -3,6 +3,7 @@ package com.techhunt.deckster.game.service;
 import com.techhunt.deckster.game.entity.Card;
 import com.techhunt.deckster.game.entity.CardType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class CardGenerationClient implements CardGenerationService {
 
     private Map<String, List<String>> getCards(String filePath) {
         Map<String, List<String>> cards = new HashMap<>();
-        Resource resource = loader.getResource("classpath:" + File.separator + filePath);
+        Resource resource = loader.getResource("classpath:" + filePath);
         if (!resource.exists()) {
             throw new IllegalArgumentException("File not found: " + filePath);
         }
