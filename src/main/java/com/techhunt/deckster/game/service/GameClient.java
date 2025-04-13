@@ -116,6 +116,9 @@ public class GameClient implements GameService {
     @Override
     public void removeUsedCardsFromUsersHands(UUID gameId) {
         List<GameCard> usedCards = gameCardService.findByGameId(gameId).stream().filter(GameCard::isUsed).toList();
-        usedCards.stream().peek(card -> card.setEmail(null)).forEach(gameCardService::save);
+        usedCards.stream().peek(card -> {
+            card.setEmail(null);
+            card.setResponseGroup(null);
+        }).forEach(gameCardService::save);
     }
 }

@@ -20,4 +20,5 @@ public interface GameCardService {
     void deleteByGameId(UUID gameId);
     void removeAll(Set<GameCard> hand);
     GameCard findOneByGameIdAndResponseGroup(UUID gameId, UUID responseGroup);
+    int countResponseGroupsByGameIdAndType(UUID gameId, UUID cardType);
 }

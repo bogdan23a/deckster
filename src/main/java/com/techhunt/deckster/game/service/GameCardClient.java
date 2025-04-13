@@ -88,4 +88,9 @@ public class GameCardClient implements GameCardService {
     public GameCard findOneByGameIdAndResponseGroup(UUID gameId, UUID responseGroup) {
         return repository.findByGameIdAndResponseGroup(gameId, responseGroup).stream().findFirst().orElse(null);
     }
+
+    @Override
+    public int countResponseGroupsByGameIdAndType(UUID gameId, UUID cardType) {
+        return repository.countResponseGroupsByGameIdAndType(gameId, cardType);
+    }
 }

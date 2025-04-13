@@ -49,4 +49,12 @@ public interface GameCardRepository extends JpaRepository<GameCard, UUID> {
     GameCard findOneByGameIdAndResponseGroup(UUID gameId, UUID responseGroup);
 
     List<GameCard> findByGameIdAndResponseGroup(UUID gameId, UUID responseGroup);
+
+    @Query("SELECT " +
+                "COUNT(DISTINCT gc.responseGroup) " +
+            "FROM GameCard AS gc " +
+            "WHERE " +
+                "gc.gameId = :gameId " +
+                "AND gc.cardId IN (SELECT c.id FROM Card AS c WHERE c.type.id = :cardType)")
+    int countResponseGroupsByGameIdAndType(UUID gameId, UUID cardType);
 }

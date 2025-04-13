@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.techhunt.deckster.game.service.GameClient.CARD_IDS_HEADER;
 import static com.techhunt.deckster.game.service.GameClient.GAME_ID_HEADER;
 
 @Service
@@ -47,7 +48,8 @@ public class IsAllPlayersRespondedGuard implements Guard<GameState, GameEvent> {
             throw new IllegalStateException("Prompt should not be missing at this point");
         }
         int playerCount = playerService.countByGameId(UUID.fromString(gameId));
-        int roundResponses = gameCardService.countByGameIdAndType(UUID.fromString(gameId), responseType);
+
+        int roundResponses = gameCardService.countResponseGroupsByGameIdAndType(UUID.fromString(gameId), responseType);
         int roundResponsesPerPlayer = roundResponses / promptCard.get().getPrompts();
         boolean isAllPlayersResponded = roundResponsesPerPlayer >= playerCount - 1;
         if (isAllPlayersResponded) {
