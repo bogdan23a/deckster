@@ -1,1 +1,2 @@
-rootProject.name = 'deckster-game'
+rootProject.name = 'deckster'
+include 'backend'

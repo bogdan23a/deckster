@@ -1,1 +1,1 @@
-# deckster-game
+# deckster
