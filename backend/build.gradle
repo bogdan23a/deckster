@@ -45,3 +45,9 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task stage(dependsOn: ['build']) {
+    doLast {
+        // Custom logic if needed
+    }
+}
