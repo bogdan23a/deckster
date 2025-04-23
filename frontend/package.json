@@ -50,5 +50,8 @@
 	"description": "",
 	"main": "svelte.config.js",
 	"author": "",
-	"license": "ISC"
+	"license": "ISC",
+	"optionalDependencies": {
+		"@tailwindcss/oxide-linux-x64-gnu": "^4.1.4"
+	}
 }
