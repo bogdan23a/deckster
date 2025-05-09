@@ -57,37 +57,6 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      # Prepare plugin archive content for creating artifact
-      - name: Prepare Plugin Artifact
-        id: artifact
-        shell: bash
-        run: |
-          cd ${{ github.workspace }}/build/libs
-          FILENAME=`ls *.jar`
-
-          echo "filename=${FILENAME:0:-4}" >> $GITHUB_OUTPUT
-
-      # Store already-built plugin as an artifact for downloading
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.artifact.outputs.filename }}
-          path: ./build/libs/
-
-  docker:
-    runs-on: ubuntu-latest
-    needs: [ jar ]
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-      #
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       # Uses the `docker/login-action` action to log in to the Container registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -121,3 +90,19 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+      # Prepare plugin archive content for creating artifact
+#      - name: Prepare Plugin Artifact
+#        id: artifact
+#        shell: bash
+#        run: |
+#          cd ${{ github.workspace }}/build/libs
+#          FILENAME=`ls *.jar`
+#
+#          echo "filename=${FILENAME:0:-4}" >> $GITHUB_OUTPUT
+#
+#      # Store already-built plugin as an artifact for downloading
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: ${{ steps.artifact.outputs.filename }}
+#          path: ./build/libs/
