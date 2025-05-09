@@ -71,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.filename }}
-          path: /build/libs/
+          path: ${{ github.workspace }}/build/libs/
 
   docker:
     needs: jar
