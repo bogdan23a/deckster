@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.techhunt.deckster.game'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
     toolchain {
@@ -50,4 +50,8 @@ task stage(dependsOn: ['build']) {
     doLast {
         // Custom logic if needed
     }
+}
+
+jar {
+    enabled = false
 }
