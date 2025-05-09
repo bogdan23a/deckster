@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.filename }}
-          path: ./build/libs/*/*
+          path: ./build/libs/
 
   docker:
     runs-on: ubuntu-latest
