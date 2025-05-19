@@ -1,24 +1,26 @@
 services:
   deckster-ui:
-    container_name: ui
-    image: deckster-ui
+    container_name: deckster-ui
+    image: ghcr.io/bogdan23a/deckster-ui:master
+    env_file:
+      - ./.ui.env
     ports:
-      - 3000:3000
+      - "5173:5173"
   deckster:
     container_name: deckster
-    image: deckster
+    image: ghcr.io/bogdan23a/deckster:master
     restart: unless-stopped
     ports:
-      - 9090:9090
+      - "9090:9090"
     env_file:
-      - .env
+      - ./.env
     depends_on:
       cockroach:
         condition: service_started
       cockroach-init:
         condition: service_completed_successfully
   cockroach:
-    container_name: 'cockroach'
+    container_name: cockroach
     image: cockroachdb/cockroach:latest
     ports:
       - '26257:26257'
@@ -26,26 +28,19 @@ services:
     restart: unless-stopped
     command: start-single-node --insecure
     healthcheck:
-      test: wget -0 - -q http://localhost:26257
+      test: curl http://cockroach:8080/health
       start_period: 60s
       timeout: 5s
-      interval: 10s
+      interval: 1s
       retries: 50
 
   cockroach-init:
-    container_name: 'cockroach-init'
+    container_name: cockroach-init
     image: cockroachdb/cockroach:latest
     depends_on:
-      'cockroach':
+      cockroach:
         condition: service_started
     volumes:
       - ./cockroach-data/:/home/
     entrypoint: /bin/bash
     command: /home/setup.sh
-
-networks:
-  net:
-    driver: bridge
-  internet:
-  proxy:
-    internal: true
