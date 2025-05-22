@@ -1,14 +1,14 @@
 services:
   deckster-ui:
     container_name: deckster-ui
-    image: ghcr.io/bogdan23a/deckster-ui:master
+    image: deckster-ui
     env_file:
       - ./.ui.env
     ports:
       - "5173:5173"
   deckster:
     container_name: deckster
-    image: ghcr.io/bogdan23a/deckster:master
+    image: deckster
     restart: unless-stopped
     ports:
       - "9090:9090"
