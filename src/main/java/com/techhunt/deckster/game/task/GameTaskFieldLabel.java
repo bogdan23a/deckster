@@ -14,7 +14,9 @@ public enum GameTaskFieldLabel {
     HOST_SETUP("The game is being set up"),
     OTHER_PLAYERS_TURN("Waiting for other players to finish their turn"),
     SCORE("Score"),
-    SHARE_GAME("Share this game with your friends");
+    SHARE_GAME("Share this game with your friends"),
+    YOU_WON("Congratulations! You won the game!"),
+    THE_WINNER("Thank you for playing! The winner of the game is:");
 
     private final String message;
 
